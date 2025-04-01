@@ -39,6 +39,38 @@
             </tbody>
         </table>
     </div>
+    <h2 class="mt-5">Fill Details Before Downloading Proposal</h2>
+    <form id="pdfForm" class="mt-3">
+        <div class="mb-3">
+            <label for="dmProposalPlan" class="form-label">DM Proposal Plan</label>
+            <input type="text" class="form-control" id="dmProposalPlan" required>
+        </div>
+        <div class="mb-3">
+            <label for="adBudget" class="form-label">Ad Budget (₹)</label>
+            <input type="number" class="form-control" id="adBudget" required>
+        </div>
+        <div class="mb-3">
+            <label for="leadsProvided" class="form-label">Leads Provided</label>
+            <input type="number" class="form-control" id="leadsProvided" required>
+        </div>
+        <div class="mb-3">
+            <label for="duration" class="form-label">Duration of Leads (Days)</label>
+            <input type="number" class="form-control" id="duration" required>
+        </div>
+        <div class="mb-3">
+            <label for="profitPerLead" class="form-label">Profit Per Lead (₹)</label>
+            <input type="number" class="form-control" id="profitPerLead" required>
+        </div>
+        <div class="mb-3">
+            <label for="expectedProfit" class="form-label">Expected Profit (₹)</label>
+            <input type="number" class="form-control" id="expectedProfit" required>
+        </div>
+        <div class="mb-3">
+            <label for="costPerLead" class="form-label">Cost Per Lead (₹)</label>
+            <input type="number" class="form-control" id="costPerLead" required>
+        </div>
+        <button type="submit" class="btn btn-primary">📥 Download Proposal PDF</button>
+    </form>
 
     <script>
         document.getElementById("pdfForm").addEventListener("submit", function(event) {
