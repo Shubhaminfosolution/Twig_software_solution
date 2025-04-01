@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lead Pricing Calculator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="container mt-5">
+
+    <h2 class="text-center">Lead Pricing Calculator</h2>
+
+    <form id="pricingForm" class="mt-4">
+        <div class="mb-3">
+            <label for="minOrderValue" class="form-label">Enter Minimum Order Value (₹)</label>
+            <input type="number" class="form-control" id="minOrderValue" name="min_order_value" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Get Best Plan</button>
+    </form>
+
+    <div id="result" class="mt-4 d-none">
+        <h4>Suggested Plan Details</h4>
+        <p><strong>Best Package:</strong> <span id="bestPlan"></span></p>
+        <p><strong>Cost Per Lead:</strong> ₹<span id="costPerLead"></span></p>
+        <p><strong>Allocation Percentage:</strong> <span id="allocationPercent"></span>%</p>
+        <p><strong>Estimated Leads:</strong> <span id="numLeads"></span></p>
+        
+        <h4 class="mt-4">All Pricing Plans</h4>
+        <table class="table table-bordered mt-2">
+            <thead>
+                <tr>
+                    <th>Package Name</th>
+                    <th>Ad Budget (₹)</th>
+                    <th>Estimated Leads</th>
+                    <th>Cost Per Lead (₹)</th>
+                </tr>
+            </thead>
+            <tbody id="allPlansTable">
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        document.getElementById("pdfForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            let dmProposalPlan = document.getElementById("dmProposalPlan").value;
+            let adBudget = document.getElementById("adBudget").value;
+            let leadsProvided = document.getElementById("leadsProvided").value;
+            let duration = document.getElementById("duration").value;
+            let profitPerLead = document.getElementById("profitPerLead").value;
+            let expectedProfit = document.getElementById("expectedProfit").value;
+            let costPerLead = document.getElementById("costPerLead").value;
+
+            // Send data to backend before downloading the PDF
+            let queryParams = `dmProposalPlan=${dmProposalPlan}&adBudget=${adBudget}&leadsProvided=${leadsProvided}&duration=${duration}&profitPerLead=${profitPerLead}&expectedProfit=${expectedProfit}&costPerLead=${costPerLead}`;
+            
+            window.location.href = `/generate_pdf/?${queryParams}`;
+        });
+
+
+        document.getElementById("pricingForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            let minOrderValue = parseFloat(document.getElementById("minOrderValue").value);
+        
+            if (isNaN(minOrderValue) || minOrderValue <= 0) {
+                alert("Please enter a valid positive number for the minimum order value.");
+                return;
+            }
+        
+            fetch(`/pricing_details/?min_order_value=${minOrderValue}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert(data.error);
+                    } else {
+                        document.getElementById("bestPlan").innerText = data.bestPlan;
+                        document.getElementById("costPerLead").innerText = data.costPerLead;
+                        document.getElementById("allocationPercent").innerText = data.allocationPercent;
+                        document.getElementById("numLeads").innerText = data.numLeads;
+                        document.getElementById("result").classList.remove("d-none");
+        
+                        // Populate the all plans table
+                        let tableBody = document.getElementById("allPlansTable");
+                        tableBody.innerHTML = "";
+                        data.allPlans.forEach(plan => {
+                            let row = `<tr>
+                                <td>${plan.name}</td>
+                                <td>₹${plan.adBudget}</td>
+                                <td>${plan.numLeads}</td>
+                                <td>₹${plan.costPerLead}</td>
+                            </tr>`;
+                            tableBody.innerHTML += row;
+                        });
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        });
+        
+        document.getElementById("downloadBtn").addEventListener("click", function() {
+            window.location.href = "/generate_pdf/";
+        });
+        
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
