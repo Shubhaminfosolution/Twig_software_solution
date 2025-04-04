@@ -1,50 +1,40 @@
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
-import math
-    
-from reportlab.lib.pagesizes import letter
-from reportlab.pdfgen import canvas
-from reportlab.pdfbase.ttfonts import TTFont
-from reportlab.pdfbase import pdfmetrics
-from django.http import HttpResponse
+from django.template.loader import get_template
+from xhtml2pdf import pisa
+import io
 
-
+# Pricing Plans Data
 PRICING_PLANS = [
-    {"name": "100% Interested Leads - 3,999-/", "ad_budget":3000, "plan_price": 3999, "min_order": 10000, "mer": 10},
-    {"name": "100% Interested Leads - 7,999-/", "ad_budget":4000, "plan_price": 7999, "min_order": 999, "mer": 10},
-    {"name": "100% Interested Leads - 14,999-/", "ad_budget":6000, "plan_price": 14999, "min_order": 10000, "mer": 10},
-    {"name": "100% Interested Leads - 27,999-/", "ad_budget":8000, "plan_price": 27999, "min_order": 10000, "mer": 10},
-    {"name": "100% Closed Leads - 30,000-/", "ad_budget":6000, "plan_price": 30000, "min_order": 20000, "mer": 10},
-    {"name": "100% Closed Leads - 60,000-/", "ad_budget":8000, "plan_price": 60000, "min_order": 20000, "mer": 10},
+    {"name": "100% Interested Leads - 3,999-/", "ad_budget": 3000, "plan_price": 3999, "min_order": 10000, "mer": 10},
+    {"name": "100% Interested Leads - 7,999-/", "ad_budget": 4000, "plan_price": 7999, "min_order": 999, "mer": 10},
+    {"name": "100% Interested Leads - 14,999-/", "ad_budget": 6000, "plan_price": 14999, "min_order": 10000, "mer": 10},
+    {"name": "100% Interested Leads - 27,999-/", "ad_budget": 8000, "plan_price": 27999, "min_order": 10000, "mer": 10},
+    {"name": "100% Closed Leads - 30,000-/", "ad_budget": 6000, "plan_price": 30000, "min_order": 20000, "mer": 10},
+    {"name": "100% Closed Leads - 60,000-/", "ad_budget": 8000, "plan_price": 60000, "min_order": 20000, "mer": 10},
 ]
 
-
-
+# Home Page
 def index(request):
     return render(request, "index.html")
 
-
+# Fetch Best Pricing Plan
 def pricing_details(request):
     min_order_value = float(request.GET.get("min_order_value", 0))
 
-    
     pricing_plans_copy = [plan.copy() for plan in PRICING_PLANS]
 
-    
     for plan in pricing_plans_copy:
         if min_order_value < 3000:
             plan["num_leads"] = max(round(plan["plan_price"] / (min_order_value * plan["mer"] / 100), 0) + 5, 10)
         else:
             plan["num_leads"] = round(plan["plan_price"] / (min_order_value * plan["mer"] / 100), 0)
 
-    
         plan["ad_budget"] = int(plan["ad_budget"])
-    sorted_plans = sorted(pricing_plans_copy, key=lambda x: abs(x["num_leads"] - 15))
-
     
+    sorted_plans = sorted(pricing_plans_copy, key=lambda x: abs(x["num_leads"] - 15))
     best_plan = sorted_plans[0]
 
-    
     all_plans_data = [
         {
             "name": plan["name"],
@@ -63,38 +53,34 @@ def pricing_details(request):
         "allPlans": all_plans_data
     })
 
+# Generate PDF Proposal
+from django.http import JsonResponse, HttpResponse
+from django.shortcuts import render
+from django.template.loader import get_template
+from xhtml2pdf import pisa
+import io
 
 def generate_marketing_pdf(request):
-    # Get data from GET parameters
-    dm_proposal_plan = request.GET.get("dmProposalPlan", "N/A")
-    ad_budget = request.GET.get("adBudget", "N/A")
-    leads_provided = request.GET.get("leadsProvided", "N/A")
-    duration = request.GET.get("duration", "N/A")
-    profit_per_lead = request.GET.get("profitPerLead", "N/A")
-    expected_profit = request.GET.get("expectedProfit", "N/A")
-    cost_per_lead = request.GET.get("costPerLead", "N/A")
+    context = {
+        "avg_order_value": request.GET.get("avgOrderValue", "N/A"),
+        "package": request.GET.get("package", "N/A"),
+        "ad_budget": request.GET.get("adBudget", "N/A"),
+        "revenue": request.GET.get("revenue", "N/A"),
+        "num_leads": request.GET.get("numLeads", "N/A"),
+        "duration": request.GET.get("duration", "N/A"),
+        "savings": request.GET.get("savings", "N/A"),
+    }
 
-    # Create a PDF response
-    response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename="Digital_Marketing_Proposal.pdf"'
+    template = get_template("pdf_template.html")
+    html = template.render(context)
 
-    # Create PDF
-    p = canvas.Canvas(response, pagesize=letter)
-    width, height = letter
+    pdf_buffer = io.BytesIO()
+    pisa_status = pisa.CreatePDF(html.encode("utf-8"), dest=pdf_buffer)  # Encode as UTF-8
 
-    p.setFont("Helvetica-Bold", 14)
-    p.drawString(100, height - 50, "Digital Marketing Proposal")
+    if pisa_status.err:
+        return HttpResponse("Error generating PDF", status=500)
 
-    p.setFont("Helvetica", 12)
-    p.drawString(100, height - 100, f"DM Proposal Plan: {dm_proposal_plan}")
-    p.drawString(100, height - 120, f"Ad Budget: ₹{ad_budget}")
-    p.drawString(100, height - 140, f"Leads Provided: {leads_provided}")
-    p.drawString(100, height - 160, f"Duration of Leads: {duration} Days")
-    p.drawString(100, height - 180, f"Profit Per Lead: ₹{profit_per_lead}")
-    p.drawString(100, height - 200, f"Expected Profit: ₹{expected_profit}")
-    p.drawString(100, height - 220, f"Cost Per Lead: ₹{cost_per_lead}")
-
-    p.showPage()
-    p.save()
-    
+    pdf_buffer.seek(0)
+    response = HttpResponse(pdf_buffer, content_type="application/pdf")
+    response["Content-Disposition"] = 'attachment; filename="Marketing_Proposal.pdf"'
     return response

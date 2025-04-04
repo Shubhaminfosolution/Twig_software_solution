@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta chaet="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verified Enquiries</title>
+    <style>
+        body {
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: #fff;
+            padding: 30px;
+            border: 1px solid #ccc;
+        }
+        h2 {
+            text-align: center;
+            color: #2c3e50;
+            font-size: 28px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+        .section-title {
+            font-size: 20px;
+            {% comment %} font-weight: bold; {% endcomment %}
+            margin-top: 30px;
+            background-color: #AAD8E6;
+            color: #000000;
+            border-bottom: 2px solid #AAD8E6;
+            padding-bottom: 5px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            background: #fff;
+            border: 1px #000000;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px #000000;
+            text-align: left;
+            font-size: 16px;
+        }
+        th {
+            background: #ADD8E6;
+            color: black;
+            text-transform: uppercase;
+        }
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        p {
+            font-size: 16px;
+            color: #444;
+            line-height: 1.5;
+        }
+        .highlight {
+            background-color: yellow;
+            padding: 4px 8px;
+            {% comment %} font-weight: bold; {% endcomment %}
+            display: inline-block;
+            font-size: 18px;
+            color: #333;
+        }
+        .cta {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #e74c3c;
+            padding: 10px;
+            border: 1px solid #e74c3c;
+            display: inline-block;
+        }
+        
+    </style>
+
+
+</head>
+<body>
+    <div class="container">
+        <h2>Verified Enquiries</h2>
+
+        <p class="section-title">Lead Generation Plan</p>
+        <table>
+            <tr><th>Package</th><td>{{ package }}</td></tr>
+            <tr><th>Ad Budget</th><td>{{ ad_budget }} rs</td></tr>
+            <tr><th>Expected Revenue</th><td>{{ revenue }} rs</td></tr>
+            <tr><th>Number of Leads</th><td>{{ num_leads }}</td></tr>
+            <tr><th>Duration</th><td>{{ duration }} Days</td></tr>
+            <tr><th>Savings</th><td> 1,200 rs</td></tr>
+        </table>
+
+        <p class="section-title">In-House Expenses Per Executive</p>
+        <table>
+            <tr><th>Expense Category</th><th>Cost (rs)</th></tr>
+            <tr><td>Basic Salary</td><td>14,000.00 rs</td></tr>
+            <tr><td>Employee Benefits (PF, ESI, Bonus)</td><td>2,500.00 rs</td></tr>
+            <tr><td>Office Rent & Utilities</td><td>1,500.00 rs</td></tr>
+            <tr><td>Software & Tools (CRM)</td><td>1,200.00 rs</td></tr>
+            <tr><td>Internet & Communication</td><td>1,000.00 rs</td></tr>
+            <tr><td>Training & Development</td><td>500.00 rs</td></tr>
+            <tr><td>Travel, Refreshments</td><td>200.00 rs</td></tr>
+            <tr><th>Total</th><th>20,900.00 rs</th></tr>
+        </table>
+
+        <p class="section-title">Why This is a Game-Changer for Your Business!</p>
+        <p>Traditional in-house lead generation costs up to <span class="highlight">5,971</span> per lead due to salaries, infrastructure, and ad spend. Our DM Proposals cut costs by up to <span class="highlight">70%</span> while delivering qualified, business-ready leads!</p>
+
+        <p class="cta">⚡ Act Now – These Exclusive Prices are Valid Until <span class="highlight">30th Sept 2025!</span> ⚡</p>
+    </div>
+</body>
+</html>
